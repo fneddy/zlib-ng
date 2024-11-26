@@ -4,6 +4,17 @@
 #include "zutil.h"
 
 /*
+   Runtime Tuning parameters.
+ */
+extern int env_dfltcc_disabled;
+extern int env_dfltcc_source_date_epoch;
+extern unsigned long env_dfltcc_level_mask;
+extern unsigned long env_dfltcc_block_size;
+extern unsigned long env_dfltcc_block_threshold;
+extern unsigned long env_dfltcc_dht_threshold;
+extern unsigned long env_dfltcc_ribm;
+
+/*
    Parameter Block for Query Available Functions.
  */
 struct dfltcc_qaf_param {

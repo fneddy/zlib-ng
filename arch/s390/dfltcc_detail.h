@@ -1,27 +1,9 @@
 #include "zbuild.h"
+#include "dfltcc_common.h"
 #include <stdio.h>
 
 #ifdef HAVE_SYS_SDT_H
 #include <sys/sdt.h>
-#endif
-
-/*
-   Tuning parameters.
- */
-#ifndef DFLTCC_LEVEL_MASK
-#define DFLTCC_LEVEL_MASK 0x2
-#endif
-#ifndef DFLTCC_BLOCK_SIZE
-#define DFLTCC_BLOCK_SIZE 1048576
-#endif
-#ifndef DFLTCC_FIRST_FHT_BLOCK_SIZE
-#define DFLTCC_FIRST_FHT_BLOCK_SIZE 4096
-#endif
-#ifndef DFLTCC_DHT_MIN_SAMPLE_SIZE
-#define DFLTCC_DHT_MIN_SAMPLE_SIZE 4096
-#endif
-#ifndef DFLTCC_RIBM
-#define DFLTCC_RIBM 0
 #endif
 
 #define static_assert(c, msg) __attribute__((unused)) static char static_assert_failed_ ## msg[c ? 1 : -1]
@@ -227,7 +209,7 @@ static inline void dfltcc_reset_state(struct dfltcc_state *dfltcc_state) {
     /* Initialize parameter block */
     memset(&dfltcc_state->param, 0, sizeof(dfltcc_state->param));
     dfltcc_state->param.nt = 1;
-    dfltcc_state->param.ribm = DFLTCC_RIBM;
+    dfltcc_state->param.ribm = env_dfltcc_ribm;
 }
 
 static inline void dfltcc_copy_state(void *dst, const void *src, uInt size, uInt extension_size) {
