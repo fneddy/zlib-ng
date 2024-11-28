@@ -203,6 +203,8 @@ static inline void dfltcc_reset_state(struct dfltcc_state *dfltcc_state) {
     if (is_dfltcc_enabled()) {
         dfltcc(DFLTCC_QAF, &dfltcc_state->param, NULL, NULL, NULL, NULL, NULL);
         memmove(&dfltcc_state->af, &dfltcc_state->param, sizeof(dfltcc_state->af));
+        if (env_dfltcc_source_date_epoch)
+        	clear_bit(dfltcc_state->af.fns, DFLTCC_CMPR);
     } else
         memset(&dfltcc_state->af, 0, sizeof(dfltcc_state->af));
 
