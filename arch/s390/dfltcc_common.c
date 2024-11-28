@@ -2,6 +2,7 @@
 
 #include "dfltcc_common.h"
 
+#include <stdio.h>
 #include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -41,12 +42,23 @@ __attribute__((constructor)) static void init_globals(void)
 #endif
     env_dfltcc_level_mask = xstrtoul(getenv("DFLTCC_LEVEL_MASK"),
                               DFLTCC_LEVEL_MASK);
+    if(env_dfltcc_level_mask > 10) {
+        fprintf(stderr, "DFLTCC_LEVEL_MASK %lu out of range. Allowed range is 0-10. Resetting to default(%d)\n", 
+            env_dfltcc_level_mask, DFLTCC_LEVEL_MASK);
+        env_dfltcc_level_mask = DFLTCC_LEVEL_MASK;
+    }
 
 #ifndef DFLTCC_BLOCK_SIZE
 #define DFLTCC_BLOCK_SIZE 1048576
 #endif
     env_dfltcc_block_size = xstrtoul(getenv("DFLTCC_BLOCK_SIZE"),
                               DFLTCC_BLOCK_SIZE);
+    if( (env_dfltcc_block_size & (env_dfltcc_block_size - 1) /* power of 2 */)
+        || (env_dfltcc_block_size < 0x40000)/* less 256K */) {
+        fprintf(stderr,"DFLTCC_BLOCK_SIZE %lu out of range. Value must be power of 2 and greater 0x40000. Reseting to default(%d)\n",
+            env_dfltcc_block_size, DFLTCC_BLOCK_SIZE);
+        env_dfltcc_block_size = DFLTCC_BLOCK_SIZE;
+    }
 
 #ifndef DFLTCC_FIRST_FHT_BLOCK_SIZE
 #define DFLTCC_FIRST_FHT_BLOCK_SIZE 4096
