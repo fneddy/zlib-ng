@@ -875,7 +875,12 @@ if(WITH_OPTIM)
         endif()
         if(WITH_CRC32_VX)
             check_vgfma_intrinsics()
-            if(HAVE_VGFMA_INTRIN)
+            if(HAVE_VGFMA_INTRIN AND
+                (NOT (${CMAKE_C_COMPILER_ID} STREQUAL "Clang") OR
+                 ${CMAKE_C_COMPILER_VERSION} VERSION_LESS 18 OR
+                 ${CMAKE_C_COMPILER_VERSION} VERSION_EQUAL 19.1.2 OR
+                 ${CMAKE_C_COMPILER_VERSION} VERSION_GREATER 19.1.2))
+
                 add_definitions(-DS390_CRC32_VX)
                 set(CRC32_VX_SRCS ${ARCHDIR}/crc32-vx.c)
                 list(APPEND ZLIB_ARCH_SRCS ${CRC32_VX_SRCS})

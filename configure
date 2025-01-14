@@ -1465,6 +1465,11 @@ EOF
     fi
 }
 
+version_number() {
+    # convert a version from string into a number, assuming 8 bits per nibble
+    echo "$1" | awk -F '.' '{printf "%d", lshift($1,16) + lshift($2,8) + $3}'
+}
+
 check_vgfma_intrinsics() {
     # Check whether "VECTOR GALOIS FIELD MULTIPLY SUM AND ACCUMULATE" intrinsic is available
     printf "Checking for -mzarch... " | tee -a configure.log
@@ -1498,6 +1503,20 @@ EOF
     else
         HAVE_VGFMA_INTRIN=0
         echo "No." | tee -a configure.log
+    fi
+
+    printf "Checking compiler version for good s390 vector extension... " | tee -a configure.log
+    CC_STRING=$(${CC} --version  | grep -oE 'clang version [0-9]+\.[0-9]+(\.[0-9]+)?')
+    CC_ID=$(echo ${CC_STRING} | awk '{print $1}')
+    CC_VERSION=$(version_number $( echo ${CC_STRING} | awk '{print $3}'))
+
+    if ([ "${CC_ID}" = "clang" ] &&
+        [ ${CC_VERSION} -ge $(version_number 18.0.0) ] &&
+        [ ${CC_VERSION} -lt $(version_number 19.1.2) ]); then
+        HAVE_VGFMA_INTRIN=0
+        echo "No." | tee -a configure.log
+    else
+        echo "Yes." | tee -a configure.log
     fi
 }
 
